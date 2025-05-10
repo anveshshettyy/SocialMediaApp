@@ -1,6 +1,7 @@
-import { mutation, query } from "./_generated/server";
+import { mutation, MutationCtx, query } from "./_generated/server";
 import { v } from "convex/values";
 import { getAuthenticatedUser } from "./users";
+import { Id } from "./_generated/dataModel";
 
 export const generateUploadUrl = mutation(async (ctx) => {
   const identity = await ctx.auth.getUserIdentity();
@@ -181,5 +182,23 @@ export const deletePost = mutation({
       await ctx.db.patch(currentUser._id, {
         posts: Math.max(0, (currentUser.posts || 1) -1),
       })
+  }
+});
+
+export const getPostsByUser = query({
+  args: {
+    userId: v.optional(v.id("users")),
+  },
+  handler: async (ctx, args) => {
+    const user = args.userId ? await ctx.db.get(args.userId) : await getAuthenticatedUser(ctx);
+
+    if(!user) throw new Error("User not found");
+
+    const posts = await ctx.db
+     .query("posts")
+     .withIndex("by_user", (q) => q.eq("userId", args.userId || user._id))
+     .collect();
+
+    return posts;
   }
 });

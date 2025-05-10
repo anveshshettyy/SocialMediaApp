@@ -1,14 +1,15 @@
-import { View, Text, TouchableOpacity, ScrollView, FlatList, Modal, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform, TextInput } from 'react-native'
-import React, { useState } from 'react'
-import { useAuth } from '@clerk/clerk-expo'
-import { useMutation, useQuery } from 'convex/react';
+import { Loader } from '@/components/Loader';
+import { COLORS } from '@/constants/theme';
 import { api } from '@/convex/_generated/api';
 import { Doc } from '@/convex/_generated/dataModel';
-import { Loader } from '@/components/Loader';
 import { styles } from '@/styles/profile.style';
+import { useAuth } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS } from '@/constants/theme';
+import { useMutation, useQuery } from 'convex/react';
 import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
+import React, { useState } from 'react';
+import { FlatList, Keyboard, KeyboardAvoidingView, Modal, Platform, ScrollView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 
 export default function Profile() {
   const {signOut, userId} = useAuth();
@@ -37,68 +38,64 @@ export default function Profile() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Text style={styles.username}>{currentUser.username}</Text>
-        </View>
-        <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.headerIcon} onPress={() => signOut()}>
-            <Ionicons name="log-out-outline" size={24} color={COLORS.white} />
-          </TouchableOpacity>
+      {/* Cover Gradient */}
+      <View>
+        <LinearGradient
+          colors={["#34d399", "#ffffff"]}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
+          style={styles.coverImage}
+        />
+        {/* Overlapping Avatar */}
+        <View style={styles.profileAvatarWrapper}>
+          <Image
+            source={currentUser.image}
+            style={styles.profileAvatar}
+            contentFit="cover"
+            transition={200}
+          />
         </View>
       </View>
-
-      <ScrollView showsVerticalScrollIndicator={false} >
-        <View style={styles.profileInfo} >
-            <View style={styles.avatarAndStats} >
-              <View style={styles.avatarContainer}>
-                <Image
-                  source={currentUser.image}
-                  style={styles.avatar}
-                  contentFit="cover"
-                  transition={200}
-                />
-              </View>
-
-              <View style={styles.statsContainer}>
-                  <View style={styles.statItem}>
-                    <Text style={styles.statNumber}>{currentUser.posts}</Text>
-                    <Text style={styles.statLabel}>Posts</Text>
-                  </View>
-
-                  <View style={styles.statItem}>
-                    <Text style={styles.statNumber}>{currentUser.followers}</Text>
-                    <Text style={styles.statLabel}>Followers</Text>
-                  </View>
-
-                  <View style={styles.statItem}>
-                    <Text style={styles.statNumber}>{currentUser.following}</Text>
-                    <Text style={styles.statLabel}>Following</Text>
-                  </View>
-              </View>
-            </View>
-            <Text style={styles.name}>{currentUser.fullname}</Text>
-            {currentUser.bio && <Text style={styles.bio}>{currentUser.bio}</Text>}
-
-            <View style={styles.actionButtons}>
-              <TouchableOpacity style={styles.editButton} onPress={() => setIsEditModalVisible(true)}>
-                <Text style={styles.editButtonText}>Edit Profile</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.shareButton}>
-                <Ionicons name="share-outline" size={20} color={COLORS.white} />
-              </TouchableOpacity>
-            </View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Name & Bio */}
+        <Text style={styles.name}>{currentUser.fullname}</Text>
+        {currentUser.bio && <Text style={styles.bio}>{currentUser.bio}</Text>}
+        {/* Stats Row */}
+        <View style={styles.statsRow}>
+          <View style={styles.statItem}>
+            <Text style={styles.statNumber}>{currentUser.followers}</Text>
+            <Text style={styles.statLabel}>Followers</Text>
+          </View>
+          <View style={styles.separator} />
+          <View style={styles.statItem}>
+            <Text style={styles.statNumber}>{currentUser.following}</Text>
+            <Text style={styles.statLabel}>Following</Text>
+          </View>
+          <View style={styles.separator} />
+          <View style={styles.statItem}>
+            <Text style={styles.statNumber}>{currentUser.posts}</Text>
+            <Text style={styles.statLabel}>Posts</Text>
+          </View>
         </View>
-
+        {/* Action Buttons */}
+        <View style={styles.actionButtons}>
+          <TouchableOpacity style={styles.actionButton} onPress={() => setIsEditModalVisible(true)}>
+            <Text style={styles.actionButtonText}>Edit Profile</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.actionButton}>
+            <Ionicons name="share-outline" size={20} color="#000" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.divider} />
+        {/* Post Grid */}
         {posts.length === 0 && <NoPostsFound />}
-
-        <FlatList 
+        <FlatList
           data={posts}
           numColumns={3}
           scrollEnabled={false}
           renderItem={({ item }) => (
-            <TouchableOpacity style={styles.gridItem} onPress={() => setSelectedPost(item)} >
-              <Image  
+            <TouchableOpacity style={styles.gridItem} onPress={() => setSelectedPost(item)}>
+              <Image
                 source={item.imageUrl}
                 style={styles.gridImage}
                 contentFit="cover"

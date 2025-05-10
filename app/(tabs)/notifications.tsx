@@ -34,7 +34,7 @@ function NoNotificationsFound() {
   return (
     <View style={[styles.container, styles.centered]}>
       <Ionicons name="notifications-outline" size={48} color={COLORS.primary} />
-      <Text style={{ fontSize: 20, color: COLORS.white }}>
+      <Text style={{ fontSize: 20, color: COLORS.white, marginTop: "10px" }}>
         No notifications yet
       </Text>
     </View>

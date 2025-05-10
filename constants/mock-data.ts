@@ -3,7 +3,7 @@ export const STORIES = [
       id: "1",
       username: "You",
       avatar:
-        "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18yd2NJOGRTMmhYVE50VEtjdnpNN0FRdGVEU08ifQ?width=160",
+        "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg",
       hasStory: false,
     },
     {
